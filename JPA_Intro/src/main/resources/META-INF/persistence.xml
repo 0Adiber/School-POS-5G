@@ -6,12 +6,13 @@
     <persistence-unit name="PU_JPA_Intro">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>at.kaindorf.intro.pojos.Student</class>
+        <class>at.kaindorf.intro.pojos.Address</class>
         <properties>
-            <property name="eclipselink.jdbc.url" value="jdbc:postgresql://localhost:5432/testdb"/>
-            <property name="eclipselink.jdbc.driver" value="org.postgresql.Driver"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/testdb"/>
+            <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
             <property name="eclipselink.jdbc.user" value="postgres"/>
             <property name="eclipselink.jdbc.password" value="postgres"/>
-            <property name="ddl-generation" value="drop-and-create-tables"/>
+            <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
         </properties>
     </persistence-unit>
 </persistence>
