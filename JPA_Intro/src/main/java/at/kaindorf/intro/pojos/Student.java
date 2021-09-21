@@ -44,7 +44,12 @@ public class Student implements Serializable {
     private String fullname;
 
     @OneToOne(cascade = CascadeType.PERSIST, orphanRemoval = true) // dann braucht man kein em.persist(addr) mehr
+    @JoinColumn(name = "address")
     private Address address;
+
+    @ManyToOne
+    @JoinColumn(name = "school_class")
+    private SchoolClass schoolClass;
 
     public String getFullname() {
         return String.format("%s %s", lastname, firstname);

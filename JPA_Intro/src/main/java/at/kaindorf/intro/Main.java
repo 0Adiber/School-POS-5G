@@ -1,6 +1,7 @@
 package at.kaindorf.intro;
 
 import at.kaindorf.intro.pojos.Address;
+import at.kaindorf.intro.pojos.SchoolClass;
 import at.kaindorf.intro.pojos.Student;
 
 import javax.persistence.EntityManager;
@@ -18,13 +19,21 @@ public class Main {
         Address addr1 = new Address("Kaindorf", "Grazerstr", "220");
         //em.persist(addr1);
         student.setAddress(addr1);
-        em.persist(student);
+        addr1.setStudent(student);
+        //em.persist(student);
 
         Student student2 = new Student("5DHIF", 2L, "Adrian", "Berner", LocalDate.now().minusDays(1000));
         Address addr2 = new Address("Graz", "Herrengasse", "10");
         //em.persist(addr2);
         student2.setAddress(addr2);
-        em.persist(student2);
+        addr2.setStudent(student2);
+        //em.persist(student2);
+
+        SchoolClass sc = new SchoolClass("5DHIF");
+        sc.addStudent(student);
+        sc.addStudent(student2);
+
+        em.persist(sc);
 
         em.getTransaction().begin();
         em.getTransaction().commit();
