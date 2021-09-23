@@ -6,16 +6,22 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Data
 @Entity(name = "country")
 @NoArgsConstructor
 @RequiredArgsConstructor
 @AllArgsConstructor
+@NamedQueries({
+    @NamedQuery(name = "Country.countAll", query = "SELECT COUNT(c) FROM country c"),
+    @NamedQuery(name = "Country.findAll", query = "SELECT c FROM country c"),
+})
 public class Country implements Serializable {
     @Id
     @Column(name = "country_id")
     @GeneratedValue
+    @EqualsAndHashCode.Exclude
     private Long countryId;
 
     @Column(name = "name", length = 50)
@@ -27,5 +33,10 @@ public class Country implements Serializable {
     private String countryCode;
 
     @OneToMany(mappedBy = "country", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @EqualsAndHashCode.Exclude
     private List<Address> addresses = new ArrayList<>();
+
+    public void addAddress(Address address) {
+        this.addresses.add(address);
+    }
 }

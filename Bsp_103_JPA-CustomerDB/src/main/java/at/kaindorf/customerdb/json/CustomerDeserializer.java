@@ -1,0 +1,80 @@
+package at.kaindorf.customerdb.json;
+
+import at.kaindorf.customerdb.pojos.Address;
+import at.kaindorf.customerdb.pojos.Country;
+import at.kaindorf.customerdb.pojos.Customer;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
+
+public class CustomerDeserializer extends StdDeserializer<Customer> {
+
+    public CustomerDeserializer() {
+        super(Customer.class);
+    }
+
+    private static DateTimeFormatter DTF = DateTimeFormatter.ofPattern("dd-MMM-yyyy", Locale.ENGLISH);
+
+    Set<Country> countries = new HashSet<>();
+    Set<Address> addresses = new HashSet<>();
+    JsonNode node;
+
+    @Override
+    public Customer deserialize(JsonParser p, DeserializationContext dc) throws IOException {
+        node = dc.readValue(p, JsonNode.class);
+
+        //COUNTRY
+        String countryCode = get("country_code");
+        String countryName = get("country");
+        Country country = new Country(countryName, countryCode);
+
+        if(countries.contains(country)) {
+            Country finalCountry = country;
+            country = countries.stream().filter(c -> c.equals(finalCountry)).findFirst().get();
+        }
+        else
+            countries.add(country);
+
+        //ADDRESS
+        String streetname = get("streetname");
+        int streetnumber = Integer.parseInt(get("streetnumber"));
+        String postalCode = get("postal_code");
+        String city = get("city");
+        Address address = new Address(streetname, streetnumber, postalCode, city, country);
+
+        if(addresses.contains(address)) {
+            Address finalAddress = address;
+            address = addresses.stream().filter(a -> (a.equals(finalAddress))).findFirst().get();
+        }
+        else {
+            addresses.add(address);
+        }
+
+        country.addAddress(address);
+
+        String firstname = get("firstname");
+        String lastname = get("lastname");
+        char gender = get("gender").charAt(0);
+        boolean active = Boolean.parseBoolean(get("active"));
+        String email = get("email");
+        LocalDate since = LocalDate.parse(get("since"), DTF);
+        Customer customer = new Customer(firstname, lastname, gender, active, email, since, address);
+
+        address.addCustomer(customer);
+
+        return customer;
+    }
+
+    private String get(String key) {
+        return node.get(key).asText();
+    }
+}
