@@ -13,7 +13,11 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @JsonDeserialize(using = CustomerDeserializer.class)
-@NamedQuery(name = "Customer.countAll", query = "SELECT COUNT(c) FROM customer c")
+@NamedQueries({
+        @NamedQuery(name = "Customer.countAll", query = "SELECT COUNT(c) FROM customer c"),
+        @NamedQuery(name = "Customer.findYears", query = "SELECT DISTINCT c.since FROM customer c"),
+        @NamedQuery(name = "Customer.findFromCountry", query = "SELECT c FROM customer c WHERE c.address.country.countryId = :countryId")
+})
 public class Customer {
 
     @Id

@@ -37,12 +37,11 @@ public class CustomerDeserializer extends StdDeserializer<Customer> {
         String countryName = get("country");
         Country country = new Country(countryName, countryCode);
 
-        if(countries.contains(country)) {
-            Country finalCountry = country;
-            country = countries.stream().filter(c -> c.equals(finalCountry)).findFirst().get();
-        }
-        else
-            countries.add(country);
+        countries.add(country);
+
+        Country finalCountry = country;
+        country = countries.stream().filter(c -> c.equals(finalCountry)).findFirst().get();
+
 
         //ADDRESS
         String streetname = get("streetname");
@@ -51,13 +50,10 @@ public class CustomerDeserializer extends StdDeserializer<Customer> {
         String city = get("city");
         Address address = new Address(streetname, streetnumber, postalCode, city, country);
 
-        if(addresses.contains(address)) {
-            Address finalAddress = address;
-            address = addresses.stream().filter(a -> (a.equals(finalAddress))).findFirst().get();
-        }
-        else {
-            addresses.add(address);
-        }
+        addresses.add(address);
+
+        Address finalAddress = address;
+        address = addresses.stream().filter(a -> (a.equals(finalAddress))).findFirst().get();
 
         country.addAddress(address);
 

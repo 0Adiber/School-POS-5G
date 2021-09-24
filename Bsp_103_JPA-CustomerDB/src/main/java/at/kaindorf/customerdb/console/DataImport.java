@@ -48,7 +48,6 @@ public class DataImport {
         System.out.println("Addresses imported: " + query.getSingleResult());
         query = em.createNamedQuery("Customer.countAll", Number.class);
         System.out.println("Customers imported: " + query.getSingleResult());
-
     }
 
     private void importXML() {
