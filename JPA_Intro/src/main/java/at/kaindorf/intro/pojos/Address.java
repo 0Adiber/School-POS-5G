@@ -9,6 +9,10 @@ import java.io.Serializable;
 @Entity
 @NoArgsConstructor
 @RequiredArgsConstructor
+@NamedQueries({
+        @NamedQuery(name = "Address.GetAll", query = "SELECT a FROM Address a WHERE a.street LIKE :street"),
+        @NamedQuery(name = "Address.GetByClassname", query = "SELECT a FROM Address a WHERE a.student.schoolClass.schoolClassname = :classname")
+})
 public class Address implements Serializable {
 
     @Id
@@ -27,6 +31,7 @@ public class Address implements Serializable {
     private String number;
 
     @OneToOne(mappedBy = "address") //damit man in der datenbank nicht nochmal foreign key hat, der darauf verweist
+    @ToString.Exclude
     private Student student;
 
 }

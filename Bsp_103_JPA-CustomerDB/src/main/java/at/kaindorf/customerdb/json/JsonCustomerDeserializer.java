@@ -16,13 +16,11 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
-public class CustomerDeserializer extends StdDeserializer<Customer> {
+public class JsonCustomerDeserializer extends StdDeserializer<Customer> {
 
-    public CustomerDeserializer() {
+    public JsonCustomerDeserializer() {
         super(Customer.class);
     }
-
-    private static DateTimeFormatter DTF = DateTimeFormatter.ofPattern("dd-MMM-yyyy", Locale.ENGLISH);
 
     Set<Country> countries = new HashSet<>();
     Set<Address> addresses = new HashSet<>();
@@ -62,7 +60,7 @@ public class CustomerDeserializer extends StdDeserializer<Customer> {
         char gender = get("gender").charAt(0);
         boolean active = Boolean.parseBoolean(get("active"));
         String email = get("email");
-        LocalDate since = LocalDate.parse(get("since"), DTF);
+        LocalDate since = LocalDate.parse(get("since"), Customer.DTF);
         Customer customer = new Customer(firstname, lastname, gender, active, email, since, address);
 
         address.addCustomer(customer);

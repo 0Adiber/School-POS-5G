@@ -10,8 +10,11 @@ import java.time.LocalDate;
 @NoArgsConstructor //für JPA braucht man parameterlosen constructor
 @AllArgsConstructor
 @RequiredArgsConstructor // alle nonnull sachen
-@Entity(name = "student") //"name" kann man weg lassen
+@Entity//(name = "student") //"name" kann man weg lassen
 @IdClass(StudentPK.class)
+@NamedQueries({
+        @NamedQuery(name = "Student.CountByClassname", query = "SELECT count(s) FROM Student s WHERE s.schoolClass.schoolClassname = '5DHIF'")
+})
 public class Student implements Serializable {
     /*
     @Id

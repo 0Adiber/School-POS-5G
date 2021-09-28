@@ -1,24 +1,28 @@
 package at.kaindorf.customerdb.pojos;
 
-import at.kaindorf.customerdb.json.CustomerDeserializer;
+import at.kaindorf.customerdb.json.JsonCustomerDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 @Data
 @Entity(name = "customer")
 @NoArgsConstructor
 @RequiredArgsConstructor
 @AllArgsConstructor
-@JsonDeserialize(using = CustomerDeserializer.class)
+@JsonDeserialize(using = JsonCustomerDeserializer.class)
 @NamedQueries({
         @NamedQuery(name = "Customer.countAll", query = "SELECT COUNT(c) FROM customer c"),
         @NamedQuery(name = "Customer.findYears", query = "SELECT DISTINCT c.since FROM customer c"),
         @NamedQuery(name = "Customer.findFromCountry", query = "SELECT c FROM customer c WHERE c.address.country.countryId = :countryId")
 })
 public class Customer {
+
+    public static DateTimeFormatter DTF = DateTimeFormatter.ofPattern("dd-MMM-yyyy", Locale.ENGLISH);
 
     @Id
     @Column(name = "customer_id")

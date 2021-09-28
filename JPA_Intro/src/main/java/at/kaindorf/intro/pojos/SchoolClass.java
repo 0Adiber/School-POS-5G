@@ -8,10 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@Entity(name = "school_class")
+@Entity//(name = "school_class")
 @NoArgsConstructor
 @RequiredArgsConstructor
 @AllArgsConstructor
+@NamedQueries({
+        @NamedQuery(name = "SchoolClass.GetByStudentName", query = "SELECT s FROM SchoolClass s JOIN s.students stu WHERE stu.lastname = :lastname")
+})
 public class SchoolClass implements Serializable {
 
     @Id
@@ -21,6 +24,7 @@ public class SchoolClass implements Serializable {
 
     @OneToMany(mappedBy = "schoolClass", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @OrderBy("lastname desc, firstname asc")
+    @ToString.Exclude
     private List<Student> students = new ArrayList<>();
 
     public void addStudent(Student student) {

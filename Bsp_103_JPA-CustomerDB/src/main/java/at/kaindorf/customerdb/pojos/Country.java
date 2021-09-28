@@ -16,7 +16,7 @@ import java.util.Objects;
 @NamedQueries({
     @NamedQuery(name = "Country.countAll", query = "SELECT COUNT(c) FROM country c"),
     @NamedQuery(name = "Country.findAll", query = "SELECT c FROM country c"),
-    @NamedQuery(name = "Country.findByName", query = "SELECT c FROM country c WHERE c.countryName = :name"),
+    @NamedQuery(name = "Country.findByName", query = "SELECT c FROM country c WHERE upper(c.countryName) = upper(:name)"),
 })
 public class Country implements Serializable {
     @Id
@@ -39,5 +39,9 @@ public class Country implements Serializable {
 
     public void addAddress(Address address) {
         this.addresses.add(address);
+    }
+
+    public void pretty(){
+        System.out.println(String.format("• [%s] %s", countryCode, countryName));
     }
 }
