@@ -1,24 +1,19 @@
 package at.kaindorf.customerdb.console;
 
-import at.kaindorf.customerdb.pojos.Country;
-import at.kaindorf.customerdb.pojos.Customer;
-import at.kaindorf.customerdb.xml.XmlCustomerDeserializer;
+import at.kaindorf.customerdb.pojos.*;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
 import javax.persistence.*;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.bind.JAXB;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class DataImport {
 
@@ -36,39 +31,46 @@ public class DataImport {
     }
 
     private void importJSON() throws IOException {
-
         ObjectMapper mapper = new ObjectMapper();
-
-        String path = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", "customers.json").toString();
-
-        List<Customer> customers = mapper.readValue(new File(path), new TypeReference<List<Customer>>() {
+        Path path = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", "customers.json");
+        List<CustomerDummy> customers = mapper.readValue(path.toFile(), new TypeReference<List<CustomerDummy>>() {
         });
-
         importData(customers);
     }
 
     private void importXML() throws IOException {
-
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = null;
-        Document doc = null;
-        try {
-            builder = factory.newDocumentBuilder();
-            Path path = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", "customers.xml");
-            doc = builder.parse(path.toFile());
-
-            List<Customer> customers = new XmlCustomerDeserializer().deserialize(doc);
-            importData(customers);
-        } catch (ParserConfigurationException | SAXException | IOException e) {
-            e.printStackTrace();
-            throw new IOException("Error parsing customers.xml");
-        }
-
+        Path path = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", "customers.xml");
+        Customers customers = JAXB.unmarshal(path.toFile(), Customers.class);
+        importData(customers.getCustomers());
     }
 
-    private void importData(List<Customer> customers) {
+    private void importData(List<CustomerDummy> customers) {
         em.getTransaction().begin();
-        customers.forEach(c -> em.persist(c));
+
+        Set<Country> countries = new HashSet<>();
+        Set<Address> addresses = new HashSet<>();
+
+        for (CustomerDummy dummy : customers) {
+            // COUNTRY
+            Country country = new Country(dummy.getCountry(), dummy.getCountryCode());
+            countries.add(country);
+            Country finalCountry = country;
+            country = countries.stream().filter(c -> c.equals(finalCountry)).findFirst().get();
+
+            // ADDRESS
+            Address address = new Address(dummy.getStreetname(), dummy.getStreetnumber(), dummy.getPostalCode(), dummy.getCity(), country);
+            addresses.add(address);
+            Address finalAddress = address;
+            address = addresses.stream().filter(a -> a.equals(finalAddress)).findFirst().get();
+            country.addAddress(address);
+
+            // CUSTOMER
+            Customer customer = new Customer(dummy.getFirstname(), dummy.getLastname(), dummy.getGender().charAt(0), dummy.isActive(), dummy.getEmail(), dummy.getSince(), address);
+            address.addCustomer(customer);
+
+            em.persist(customer);
+        }
+
         em.getTransaction().commit();
 
         TypedQuery<Number> query = em.createNamedQuery("Country.countAll", Number.class);
@@ -125,8 +127,8 @@ public class DataImport {
                         importXML();
                         break;
                     case '3':
-                        Query query = em.createNamedQuery("Country.countAll");
-                        System.out.println("\nNumber of Countries: " + (Long)query.getSingleResult() + "\n");
+                        Query c0 = em.createNamedQuery("Country.countAll");
+                        System.out.println("\nNumber of Countries: " + (Long) c0.getSingleResult() + "\n");
                         break;
                     case '4':
                         TypedQuery<Country> c1 = em.createNamedQuery("Country.findAll", Country.class);
@@ -143,12 +145,33 @@ public class DataImport {
                         System.out.print("\nName?: ");
                         c2.getResultStream().forEach(Country::pretty);
                         break;
+                    case '6':
+                        Query a1 = em.createNamedQuery("Address.countAll");
+                        System.out.println("\nNumber of Addresses: " + (Long) a1.getSingleResult() + "\n");
+                        break;
+                    case '7':
+                        Query cu0 = em.createNamedQuery("Customer.countAll");
+                        System.out.println("\nNumber of Customers: " + (Long) cu0.getSingleResult() + "\n");
+                        break;
+                    case '8':
+                        TypedQuery<Number> cu1 = em.createNamedQuery("Customer.findYears", Number.class);
+                        System.out.println("\nYears: ");
+                        cu1.getResultStream().forEach(y -> System.out.println("• " + y.intValue()));
+                        break;
+                    case '9':
+                        TypedQuery<Customer> cu2 = em.createNamedQuery("Customer.findFromCountry", Customer.class);
+                        System.out.println("Countryname :> ");
+                        String cname2 = reader.readLine().trim();
+                        cu2.setParameter("country", cname2);
+                        cu2.getResultStream().forEach(Customer::pretty);
+                        break;
                     case 'q':
                         break GAMELOOP;
                     default:
                         System.out.println("Invalid input\n");
                 }
             } catch (IOException e) {
+                e.printStackTrace();
                 System.out.println("Could not read from console!\nExiting...");
             }
         }

@@ -1,10 +1,9 @@
 package at.kaindorf.customerdb.pojos;
 
-import at.kaindorf.customerdb.json.JsonCustomerDeserializer;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.*;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
@@ -14,13 +13,12 @@ import java.util.Locale;
 @NoArgsConstructor
 @RequiredArgsConstructor
 @AllArgsConstructor
-@JsonDeserialize(using = JsonCustomerDeserializer.class)
 @NamedQueries({
         @NamedQuery(name = "Customer.countAll", query = "SELECT COUNT(c) FROM customer c"),
-        @NamedQuery(name = "Customer.findYears", query = "SELECT DISTINCT c.since FROM customer c"),
-        @NamedQuery(name = "Customer.findFromCountry", query = "SELECT c FROM customer c WHERE c.address.country.countryId = :countryId")
+        @NamedQuery(name = "Customer.findYears", query = "SELECT DISTINCT EXTRACT(year from c.since) FROM customer c ORDER BY EXTRACT(year from c.since)"),
+        @NamedQuery(name = "Customer.findFromCountry", query = "SELECT c FROM customer c WHERE UPPER(c.address.country.countryName) = UPPER(:country) OR UPPER(c.address.country.countryCode) = UPPER(:country)")
 })
-public class Customer {
+public class Customer implements Serializable {
 
     public static DateTimeFormatter DTF = DateTimeFormatter.ofPattern("dd-MMM-yyyy", Locale.ENGLISH);
 
@@ -51,6 +49,7 @@ public class Customer {
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "address")
+    @ToString.Exclude
     private Address address;
 
     public Customer(String firstname, String lastname, @NonNull char gender, @NonNull boolean active, String email, LocalDate since, Address address) {
@@ -61,5 +60,9 @@ public class Customer {
         this.email = email;
         this.since = since;
         this.address = address;
+    }
+
+    public void pretty() {
+        System.out.println(String.format("• %s %s", lastname.toUpperCase(), firstname));
     }
 }

@@ -39,10 +39,12 @@ public class Address {
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "country", nullable = false)
     @NonNull
+    @ToString.Exclude
     private Country country;
 
     @OneToMany(mappedBy = "address", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private List<Customer> customers = new ArrayList<>();
 
     public Address(String streetName, @NonNull int streetNumber, String postalCode, String city, @NonNull Country country) {

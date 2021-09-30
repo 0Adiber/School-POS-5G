@@ -35,6 +35,7 @@ public class Country implements Serializable {
 
     @OneToMany(mappedBy = "country", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private List<Address> addresses = new ArrayList<>();
 
     public void addAddress(Address address) {
