@@ -16,7 +16,7 @@ import java.util.Objects;
 @NamedQueries({
     @NamedQuery(name = "Country.countAll", query = "SELECT COUNT(c) FROM country c"),
     @NamedQuery(name = "Country.findAll", query = "SELECT c FROM country c"),
-    @NamedQuery(name = "Country.findByName", query = "SELECT c FROM country c WHERE upper(c.countryName) = upper(:name)"),
+    @NamedQuery(name = "Country.findByName", query = "SELECT c FROM country c WHERE upper(c.countryName) = upper(:name) OR upper(c.countryCode) = upper(:name)"),
 })
 public class Country implements Serializable {
     @Id

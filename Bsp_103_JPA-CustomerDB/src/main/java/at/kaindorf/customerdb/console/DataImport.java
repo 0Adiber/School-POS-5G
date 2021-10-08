@@ -21,13 +21,16 @@ public class DataImport {
     EntityManager em;
 
     private void open() {
+        close();
         emf = Persistence.createEntityManagerFactory("PU_CUSTOMERDB");
         em = emf.createEntityManager();
     }
 
     private void close() {
-        em.close();
-        emf.close();
+        if(em != null && em.isOpen()) {
+            em.close();
+            emf.close();
+        }
     }
 
     private void importJSON() throws IOException {
@@ -74,7 +77,7 @@ public class DataImport {
         em.getTransaction().commit();
 
         TypedQuery<Number> query = em.createNamedQuery("Country.countAll", Number.class);
-        System.out.println("Countries imported: " + query.getSingleResult());
+        System.out.println("\nCountries imported: " + query.getSingleResult());
         query = em.createNamedQuery("Address.countAll", Number.class);
         System.out.println("Addresses imported: " + query.getSingleResult());
         query = em.createNamedQuery("Customer.countAll", Number.class);
@@ -82,7 +85,7 @@ public class DataImport {
     }
 
     private void main() {
-        open();
+        //open();
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
@@ -121,46 +124,78 @@ public class DataImport {
                 char choice = input.length() > 0 ? input.charAt(0) : ' ';
                 switch (choice) {
                     case '1':
+                        System.out.println("Opening connection...");
+                        open();
                         importJSON();
                         break;
                     case '2':
+                        System.out.println("Opening connection...");
+                        open();
                         importXML();
                         break;
                     case '3':
+                        if(em == null || !em.isOpen()) {
+                            System.out.println("\nPlease import data first!");
+                            break;
+                        }
                         Query c0 = em.createNamedQuery("Country.countAll");
                         System.out.println("\nNumber of Countries: " + (Long) c0.getSingleResult() + "\n");
                         break;
                     case '4':
+                        if(em == null || !em.isOpen()) {
+                            System.out.println("\nPlease import data first!");
+                            break;
+                        }
                         TypedQuery<Country> c1 = em.createNamedQuery("Country.findAll", Country.class);
                         System.out.println("\nCountries: ");
                         c1.getResultStream().forEach(Country::pretty);
                         break;
                     case '5':
+                        if(em == null || !em.isOpen()) {
+                            System.out.println("\nPlease import data first!");
+                            break;
+                        }
                         TypedQuery<Country> c2 = em.createNamedQuery("Country.findByName", Country.class);
 
-                        System.out.println("Countryname :> ");
+                        System.out.print("Countryname :> ");
                         String cname = reader.readLine().trim();
 
                         c2.setParameter("name", cname);
-                        System.out.print("\nName?: ");
+                        System.out.println("\nName: ");
                         c2.getResultStream().forEach(Country::pretty);
                         break;
                     case '6':
+                        if(em == null || !em.isOpen()) {
+                            System.out.println("\nPlease import data first!");
+                            break;
+                        }
                         Query a1 = em.createNamedQuery("Address.countAll");
                         System.out.println("\nNumber of Addresses: " + (Long) a1.getSingleResult() + "\n");
                         break;
                     case '7':
+                        if(em == null || !em.isOpen()) {
+                            System.out.println("\nPlease import data first!");
+                            break;
+                        }
                         Query cu0 = em.createNamedQuery("Customer.countAll");
                         System.out.println("\nNumber of Customers: " + (Long) cu0.getSingleResult() + "\n");
                         break;
                     case '8':
+                        if(em == null || !em.isOpen()) {
+                            System.out.println("\nPlease import data first!");
+                            break;
+                        }
                         TypedQuery<Number> cu1 = em.createNamedQuery("Customer.findYears", Number.class);
                         System.out.println("\nYears: ");
                         cu1.getResultStream().forEach(y -> System.out.println("• " + y.intValue()));
                         break;
                     case '9':
+                        if(em == null || !em.isOpen()) {
+                            System.out.println("\nPlease import data first!");
+                            break;
+                        }
                         TypedQuery<Customer> cu2 = em.createNamedQuery("Customer.findFromCountry", Customer.class);
-                        System.out.println("Countryname :> ");
+                        System.out.print("Countryname :> ");
                         String cname2 = reader.readLine().trim();
                         cu2.setParameter("country", cname2);
                         cu2.getResultStream().forEach(Customer::pretty);
