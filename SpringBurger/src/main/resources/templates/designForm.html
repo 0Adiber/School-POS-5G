@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"> <!-- namespace muss man manuell hinzufügen -->
+<head>
+    <meta charset="UTF-8">
+    <title>Spring Burger</title>
+</head>
+<body>
+    <h1>Design your Spring-Burger</h1>
+
+    <form method="POST" th:object="${designBurger}"> <!-- designBurger das gleiche wie bei dem Model shit ==> macht automatisches mapping zwischen inputs und den instanzvariablen -->
+        <div th:each="key : ${ingredients.keySet()}"> <!-- ingredients hier auch von dem Model shit -->
+            <div>Choose your <span th:text="${key}">TYPE</span></div> <!-- das zwischen dem span tag is dann der default wert falls key nicht gefunden-->
+            <div th:each="ingredient : ${ingredients.get(key)}">
+                <input name="ingredients" type="checkbox" th:value="${ingredient.id}" />
+                <span th:text="${ingredient.name}">INGREDIENT</span>
+            </div>
+            <br/>
+        </div>
+        <br/>
+        <button type="submit">Submit your Burger</button>
+    </form>
+
+</body>
+</html>
