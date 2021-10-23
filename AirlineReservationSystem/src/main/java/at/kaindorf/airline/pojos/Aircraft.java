@@ -19,17 +19,16 @@ public class Aircraft implements Serializable {
     @Column(name = "aircraft_id")
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "airline_id")
+    @ManyToOne
     private Airline airline;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "airline_type_id")
     private AircraftType aircraftType;
 
     @ManyToMany(mappedBy = "aircrafts")
     private List<Airport> airports;
 
-    @OneToMany(mappedBy = "aircraft")
+    @OneToMany(mappedBy = "aircraft", orphanRemoval = true)
     private List<Flight> flights;
 }

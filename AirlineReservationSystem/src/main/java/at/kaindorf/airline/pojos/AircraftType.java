@@ -19,11 +19,8 @@ public class AircraftType implements Serializable {
     @Column(name = "aircraft_type_id")
     private Long id;
 
-    @Column(name = "type_name")
+    @Column(name = "type_name", length = 50)
     private String name;
 
     private int seats;
-
-    @OneToMany(mappedBy = "aircraftType")
-    private List<Aircraft> aircrafts;
 }

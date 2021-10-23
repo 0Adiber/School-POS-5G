@@ -23,10 +23,6 @@ public class Flight {
     private Aircraft aircraft;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumns({
-            @JoinColumn(name = "airline_id"),
-            @JoinColumn(name = "airline_name")
-    })
     private Airline airline;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

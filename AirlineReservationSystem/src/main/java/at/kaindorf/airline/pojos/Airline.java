@@ -20,12 +20,12 @@ public class Airline implements Serializable {
     private Long id;
 
     @Id
-    @Column(name = "airline_name")
+    @Column(name = "airline_name", length = 40)
     private String name;
 
     @OneToMany(mappedBy = "airline")
     private List<Aircraft> aircrafts;
 
-    @OneToMany(mappedBy = "airline")
+    @OneToMany(mappedBy = "airline", orphanRemoval = true)
     private List<Flight> flights;
 }

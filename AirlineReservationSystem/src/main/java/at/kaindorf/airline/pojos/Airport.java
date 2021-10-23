@@ -19,7 +19,11 @@ public class Airport implements Serializable {
     @Column(name = "airport_id")
     private Long id;
 
-    private String country, city, name;
+    @Column(length = 60)
+    private String  country, name;
+
+    @Column(length = 50)
+    private String city;
 
     @ManyToMany
     @JoinTable(name = "aircraft_airport",
@@ -27,10 +31,10 @@ public class Airport implements Serializable {
             inverseJoinColumns = { @JoinColumn(name = "aircraft_id") })
     private List<Aircraft> aircrafts;
 
-    @OneToMany(mappedBy = "departurePort")
+    @OneToMany(mappedBy = "departurePort", orphanRemoval = true)
     private List<Flight> departedFlights;
 
-    @OneToMany(mappedBy = "arrivePort")
+    @OneToMany(mappedBy = "arrivePort", orphanRemoval = true)
     private List<Flight> arrivedFlights;
 
 }
