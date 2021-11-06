@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Spring Burger</title>
+</head>
+<body>
+    <h1>Order form</h1>
+    <form method="post" th:action="@{/orders}" th:object="${order}" th:inline="text"> <!-- für inline thymeleaf -->
+        Deliver [[${designBurger}]] to...
+        <br />
+        <label for="name">Name</label>
+        <input id="name" type="text" th:field="*{name}" />
+        <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name Error</span>
+        <br />
+        <label for="street">Street</label>
+        <input id="street" type="text" th:field="*{street}" />
+        <span th:if="${#fields.hasErrors('street')}" th:errors="*{street}">Street Error</span>
+        <br />
+        <label for="city">City</label>
+        <input id="city" type="text" th:field="*{city}" />
+        <span th:if="${#fields.hasErrors('city')}" th:errors="*{city}">City Error</span>
+        <br />
+        <input type="submit" value="submit order" />
+    </form>
+</body>
+</html>

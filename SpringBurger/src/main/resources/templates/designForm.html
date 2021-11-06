@@ -8,6 +8,7 @@
     <h1>Design your Spring-Burger</h1>
 
     <form method="POST" th:object="${designBurger}"> <!-- designBurger das gleiche wie bei dem Model shit ==> macht automatisches mapping zwischen inputs und den instanzvariablen -->
+        <span th:if="${#fields.hasErrors('ingredients')}" th:errors="*{ingredients}">Ingredient Error</span>
         <div th:each="key : ${ingredients.keySet()}"> <!-- ingredients hier auch von dem Model shit -->
             <div>Choose your <span th:text="${key}">TYPE</span></div> <!-- das zwischen dem span tag is dann der default wert falls key nicht gefunden-->
             <div th:each="ingredient : ${ingredients.get(key)}">
@@ -17,6 +18,9 @@
             <br/>
         </div>
         <br/>
+        Give your burger a name: <br />
+        <input type="text" th:field="*{name}" /><br /><br />
+        <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name Error</span>
         <button type="submit">Submit your Burger</button>
     </form>
 
