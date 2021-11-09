@@ -12,6 +12,12 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "airport")
+@NamedQueries({
+    @NamedQuery(
+        name = "Airport.AircraftOfAirlineLanding",
+        query = "SELECT COUNT(flight.aircraft) FROM airport port JOIN port.arrivedFlights flight WHERE flight.arrivePort.id = :airportId AND flight.aircraft.airline.id = :airlineId"
+    )
+})
 public class Airport implements Serializable {
 
     @Id

@@ -3,6 +3,7 @@ package at.kaindorf.airline.pojos;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -20,6 +21,7 @@ public class Aircraft implements Serializable {
     private Long id;
 
     @ManyToOne
+    @ToString.Exclude
     private Airline airline;
 
     @ManyToOne

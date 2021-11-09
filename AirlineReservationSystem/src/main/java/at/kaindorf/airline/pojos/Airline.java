@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -28,4 +29,11 @@ public class Airline implements Serializable {
 
     @OneToMany(mappedBy = "airline", orphanRemoval = true)
     private List<Flight> flights;
+
+    public void addAircraft(Aircraft aircraft) {
+        if(this.aircrafts == null)
+            this.aircrafts = new ArrayList<>();
+        this.aircrafts.add(aircraft);
+        aircraft.setAirline(this);
+    }
 }
