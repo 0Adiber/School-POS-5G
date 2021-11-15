@@ -43,4 +43,14 @@ public class Airport implements Serializable {
     @OneToMany(mappedBy = "arrivePort", orphanRemoval = true)
     private List<Flight> arrivedFlights;
 
+    public Airport(String line) {
+        String[] parts = line.split("\"?,\"?");
+        this.country = parts[8].trim();
+        if(this.country.length() > 60) this.country = this.country.substring(0, 60);
+        this.city = parts[10].trim();
+        if(this.city.length() > 50) this.city = this.city.substring(0, 50);
+        this.name = parts[3].trim();
+        if(this.name.length() > 60) this.name = this.name.substring(0, 60);
+    }
+
 }

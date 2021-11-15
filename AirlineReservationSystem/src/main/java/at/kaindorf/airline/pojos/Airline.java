@@ -30,6 +30,13 @@ public class Airline implements Serializable {
     @OneToMany(mappedBy = "airline", orphanRemoval = true)
     private List<Flight> flights;
 
+    public Airline(String line) {
+        String[] parts = line.split("\"?,\"?");
+        this.id = Long.parseLong(parts[0].trim());
+        this.name = parts[1].trim();
+        if(this.name.length() > 40) this.name = this.name.substring(0,40);
+    }
+
     public void addAircraft(Aircraft aircraft) {
         if(this.aircrafts == null)
             this.aircrafts = new ArrayList<>();

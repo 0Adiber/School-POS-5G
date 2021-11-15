@@ -1,5 +1,7 @@
 package at.kaindorf.airline;
 
+import at.kaindorf.airline.bl.CSVImport;
+import at.kaindorf.airline.db.DBAccess;
 import at.kaindorf.airline.pojos.Aircraft;
 import at.kaindorf.airline.pojos.Airline;
 import at.kaindorf.airline.pojos.Airport;
@@ -23,46 +25,33 @@ public class Main {
                 "                         \n" +
                 "                         \n");
 
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("PU_AIRSYS");
-        EntityManager em = emf.createEntityManager();
+        /*
+            IMPORT DATA
+         */
 
+        DBAccess.getInstance().connect();
+
+        try {
+            CSVImport.importData();
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+        }
         /*
             TEST DATA
          */
-        em.getTransaction().begin();
 
-        Airport airport = new Airport();
-        airport.setId(1L);
-        airport.setName("Flughafen Graz");
-
-        Aircraft aircraft = new Aircraft();
-        aircraft.setId(1L);
-
-        Airline airline = new Airline();
-        airline.setId(1L);
-        airline.setName("Airbus");
-        airline.addAircraft(aircraft);
-
-        Flight flight = new Flight();
-        flight.setId(1L);
-        flight.setAirline(airline);
-        flight.setAircraft(aircraft);
-        flight.setArrivePort(airport);
-
-        em.persist(flight);
-
-        em.getTransaction().commit();
+        // TODO
 
         /*
             TEST QUERIES
          */
+        EntityManager em = DBAccess.getInstance().getEm();
 
         TypedQuery<Number> tq = em.createNamedQuery("Airport.AircraftOfAirlineLanding", Number.class);
         tq.setParameter("airportId", 1);
         tq.setParameter("airlineId", 1);
         System.out.println(tq.getSingleResult().toString());
 
-        em.close();
-        emf.close();
+        DBAccess.getInstance().disconnect();
     }
 }
