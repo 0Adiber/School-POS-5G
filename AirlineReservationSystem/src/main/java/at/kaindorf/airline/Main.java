@@ -36,21 +36,6 @@ public class Main {
         } catch(Exception e) {
             System.out.println(e.getMessage());
         }
-        /*
-            TEST DATA
-         */
-
-        // TODO
-
-        /*
-            TEST QUERIES
-         */
-        EntityManager em = DBAccess.getInstance().getEm();
-
-        TypedQuery<Number> tq = em.createNamedQuery("Airport.AircraftOfAirlineLanding", Number.class);
-        tq.setParameter("airportId", 1);
-        tq.setParameter("airlineId", 1);
-        System.out.println(tq.getSingleResult().toString());
 
         DBAccess.getInstance().disconnect();
     }

@@ -1,18 +1,24 @@
 package at.kaindorf.airline.pojos;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@RequiredArgsConstructor
 @Entity(name = "aircraft")
+@ToString(onlyExplicitlyIncluded = true)
+@NamedQueries({
+    @NamedQuery(
+        name = "Aircraft.getCountriesOfAirports",
+        query = "SELECT DISTINCT port.country FROM aircraft craft JOIN craft.airports port WHERE craft.id = :aircraftId ORDER BY port.country"
+    )
+})
 public class Aircraft implements Serializable {
 
     @Id
@@ -26,11 +32,12 @@ public class Aircraft implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "airline_type_id")
+    @NonNull
     private AircraftType aircraftType;
 
     @ManyToMany(mappedBy = "aircrafts")
-    private List<Airport> airports;
+    private List<Airport> airports = new ArrayList<>();;
 
     @OneToMany(mappedBy = "aircraft", orphanRemoval = true)
-    private List<Flight> flights;
+    private List<Flight> flights = new ArrayList<>();;
 }

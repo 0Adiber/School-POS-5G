@@ -3,6 +3,7 @@ package at.kaindorf.airline.pojos;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -14,6 +15,21 @@ import java.util.List;
 @AllArgsConstructor
 @Entity(name = "airline")
 @IdClass(AirlinePK.class)
+@ToString(onlyExplicitlyIncluded = true)
+@NamedQueries({
+    @NamedQuery(
+        name = "Airline.countAllAircrafts",
+        query = "SELECT COUNT(craft) FROM airline line JOIN line.aircrafts craft WHERE line.id = :airlineId"
+    ),
+    @NamedQuery(
+        name = "Airline.getAircraftByFlight",
+        query = "SELECT flight.aircraft.id FROM airline line JOIN line.flights flight WHERE line.id = :airlineId AND flight.id = :flightId"
+    ),
+    @NamedQuery(
+        name = "Airline.getAircraftTypes",
+        query = "SELECT DISTINCT craft.aircraftType.name FROM airline line JOIN line.aircrafts craft WHERE line.id = :airlineId"
+    )
+})
 public class Airline implements Serializable {
 
     @Id
@@ -25,10 +41,10 @@ public class Airline implements Serializable {
     private String name;
 
     @OneToMany(mappedBy = "airline")
-    private List<Aircraft> aircrafts;
+    private List<Aircraft> aircrafts = new ArrayList<>();;
 
     @OneToMany(mappedBy = "airline", orphanRemoval = true)
-    private List<Flight> flights;
+    private List<Flight> flights = new ArrayList<>();;
 
     public Airline(String line) {
         String[] parts = line.split("\"?,\"?");
@@ -38,8 +54,6 @@ public class Airline implements Serializable {
     }
 
     public void addAircraft(Aircraft aircraft) {
-        if(this.aircrafts == null)
-            this.aircrafts = new ArrayList<>();
         this.aircrafts.add(aircraft);
         aircraft.setAirline(this);
     }
