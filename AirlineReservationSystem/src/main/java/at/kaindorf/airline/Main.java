@@ -1,8 +1,16 @@
 package at.kaindorf.airline;
 
+import at.kaindorf.airline.bl.CSVImport;
+import at.kaindorf.airline.db.DBAccess;
+import at.kaindorf.airline.pojos.Aircraft;
+import at.kaindorf.airline.pojos.Airline;
+import at.kaindorf.airline.pojos.Airport;
+import at.kaindorf.airline.pojos.Flight;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.TypedQuery;
 
 public class Main {
 
@@ -17,10 +25,18 @@ public class Main {
                 "                         \n" +
                 "                         \n");
 
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("PU_AIRSYS");
-        EntityManager em = emf.createEntityManager();
+        /*
+            IMPORT DATA
+         */
 
-        em.close();
-        emf.close();
+        DBAccess.getInstance().connect();
+
+        try {
+            CSVImport.importData();
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        DBAccess.getInstance().disconnect();
     }
 }

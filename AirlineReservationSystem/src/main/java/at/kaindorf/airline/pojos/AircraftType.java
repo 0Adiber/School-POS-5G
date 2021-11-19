@@ -3,6 +3,7 @@ package at.kaindorf.airline.pojos;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -12,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "aircraft_type")
+@ToString(onlyExplicitlyIncluded = true)
 public class AircraftType implements Serializable {
 
     @Id
@@ -23,4 +25,11 @@ public class AircraftType implements Serializable {
     private String name;
 
     private int seats;
+
+    public AircraftType(String line) {
+        String[] parts = line.split(",");
+        this.name = parts[1].trim();
+        if(this.name.length() > 50) this.name = this.name.substring(0,50);
+        seats = Integer.parseInt(parts[8]);
+    }
 }
