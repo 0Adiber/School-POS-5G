@@ -3,12 +3,11 @@ package at.kaindorf.springburger.pojos;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -29,6 +28,12 @@ public class Order {
     private String city;
 
     @OneToMany(mappedBy="order")
-    private List<Burger> burgers;
+    @ToString.Exclude
+    private List<Burger> burgers = new ArrayList<>();
+
+    public void addBurger(Burger burger) {
+        burgers.add(burger);
+        burger.setOrder(this);
+    }
 
 }
