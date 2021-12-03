@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -16,11 +17,13 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "employees")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Employee implements Serializable {
 
     @Id
     @Column(name = "emp_no")
     @JsonProperty("emp_no")
+    @EqualsAndHashCode.Include
     private int employeeNo;
 
     @Column(name = "first_name", length = 16, nullable = false)
@@ -38,8 +41,8 @@ public class Employee implements Serializable {
     private LocalDate dateOfBirth;
 
     @JsonIgnore
-    @ManyToOne
-    @Column(name = "dept_no", length = 4)
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "dept_no")
     private Department department;
 
 }

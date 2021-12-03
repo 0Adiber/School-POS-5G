@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Employees</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+</head>
+<body>
+    <h1>Employee List</h1>
+    <br />
+    <form method="POST">
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="currentDeptNo">Department</label>
+            </div>
+            <select th:name="currentDeptNo" onchange="this.form.submit()" class="custom-select" id="currentDeptNo">
+                <option value="null">ALL</option>
+                <option th:each="department : ${departments}" th:selected="${currentDept == null ? false : department.getDeptNo().equals(currentDept.getDeptNo())}" th:value="${department.deptNo}" th:text="${department.deptName}"></option>
+            </select>
+        </div>
+    </form>
+    <form method="POST" action="/employees/delete">
+        <table class="table table-striped table-hover">
+            <thead class="thead-light">
+                <tr>
+                    <th>Vorname</th>
+                    <th>Nachname</th>
+                    <th>Gender</th>
+                    <th>Geburtsdatum</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="employee : ${employees}" th:class="${currentDept != null && currentDept.getDeptManager().equals(employee) ? 'table-info' : ''}">
+                    <td th:text="${employee.firstname}"></td>
+                    <td th:text="${employee.lastname}"></td>
+                    <td th:text="${employee.gender}"></td>
+                    <td th:text="${employee.dateOfBirth}"></td>
+                    <td><button type="submit" name="empNo" th:value="${employee.employeeNo}">FIRE</button> </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+
+</body>
+</html>

@@ -19,24 +19,27 @@ public class Department implements Serializable {
     @Id
     @Column(name = "dept_no", length = 4)
     @JsonProperty("number")
-    private int deptNo;
+    private String deptNo;
 
     @Column(name = "dept_name", length = 40, nullable = false)
     @JsonProperty("name")
     private String deptName;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "emp_no", nullable = false)
-    @JsonIgnore
     private Employee deptManager;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "department")
+    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL)
     private List<Employee> employees;
 
     public void addEmployee(Employee employee) {
         this.employees.add(employee);
         employee.setDepartment(this);
+    }
+
+    public void setManager(Employee deptManager) {
+        this.deptManager = deptManager;
+        deptManager.setDepartment(this);
     }
 
 }
