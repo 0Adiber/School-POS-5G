@@ -37,6 +37,11 @@ public class Department implements Serializable {
         employee.setDepartment(this);
     }
 
+    public void removeEmployee(Employee employee) {
+        this.employees.remove(employee);
+        employee.setDepartment(null);
+    }
+
     public void setManager(Employee deptManager) {
         this.deptManager = deptManager;
         deptManager.setDepartment(this);

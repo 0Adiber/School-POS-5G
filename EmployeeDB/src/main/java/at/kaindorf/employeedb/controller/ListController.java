@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import java.io.IOException;
@@ -48,7 +49,7 @@ public class ListController {
                 }
             }
 
-            departments.forEach(d -> departmentRepository.save(d));
+            departmentRepository.saveAll(departments);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -57,9 +58,12 @@ public class ListController {
 
     @ModelAttribute
     public void addAttributes(Model model) {
-        model.addAttribute("employees", employeeRepository.findAllByOrderByLastnameAscFirstnameAsc());
         model.addAttribute("departments", departmentRepository.findAll());
-        model.addAttribute("currentDept", null);
+        if(model.getAttribute("currentDept") == null) {
+            model.addAttribute("employees", employeeRepository.findAllByOrderByLastnameAscFirstnameAsc());
+        } else {
+            model.addAttribute("employees", ((Department)model.getAttribute("currentDept")).getEmployees());
+        }
     }
 
     /*
@@ -69,15 +73,15 @@ public class ListController {
     }*/
 
     @RequestMapping(method = { RequestMethod.POST,  RequestMethod.GET })
-    public String selectDept(@RequestParam(value = "currentDeptNo", required = false, defaultValue = "-1") String current, Model model) {
-        log.info(current + "");
-
-        Department dept = null;
+    public String showList(@RequestParam(value = "currentDeptNo", required = false, defaultValue = "-1") String current, @ModelAttribute("currentDept") Department currentDept, Model model) {
+        Department dept = currentDept;
         List<Employee> employees = null;
+
         try {
-            dept = departmentRepository.findById(current).get();
+            if(dept.getDeptNo() == null)
+                dept = departmentRepository.findById(current).get();
             employees = dept.getEmployees();
-            Collections.sort(employees, Comparator.comparing(Employee::getLastname).thenComparing(Employee::getFirstname));
+            employees.sort(Comparator.comparing(Employee::getLastname).thenComparing(Employee::getFirstname));
         } catch(NoSuchElementException | NullPointerException e) {
             dept = null;
             employees = employeeRepository.findAllByOrderByLastnameAscFirstnameAsc();
@@ -90,15 +94,14 @@ public class ListController {
     }
 
     @PostMapping("delete")
-    public String delete(@RequestParam("empNo") int empNo, Model model) {
-        log.info(empNo + "");
+    public String delete(@RequestParam("empNo") int empNo, RedirectAttributes attributes) {
 
         Employee emp = employeeRepository.findById(empNo).get();
-        String deptNo = emp.getDepartment().getDeptNo();
-        emp.setDepartment(null);
+        attributes.addFlashAttribute("currentDept", emp.getDepartment());
+        emp.getDepartment().removeEmployee(emp);
         employeeRepository.saveAndFlush(emp);
 
-        return "redirect:/employees?currentDeptNo=" + deptNo;
+        return "redirect:/employees";
     }
 
 }
