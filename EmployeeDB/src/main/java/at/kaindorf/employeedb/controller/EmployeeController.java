@@ -1,5 +1,6 @@
 package at.kaindorf.employeedb.controller;
 
+import at.kaindorf.employeedb.dto.EmployeeDto;
 import at.kaindorf.employeedb.pojos.Department;
 import at.kaindorf.employeedb.pojos.Employee;
 import at.kaindorf.employeedb.repo.DepartmentRepository;
@@ -22,12 +23,12 @@ import java.util.*;
 @Controller
 @Slf4j
 @RequestMapping("/employees")
-public class ListController {
+public class EmployeeController {
 
     private DepartmentRepository departmentRepository;
     private EmployeeRepository employeeRepository;
 
-    public ListController(@Autowired DepartmentRepository departmentRepository, @Autowired EmployeeRepository employeeRepository) {
+    public EmployeeController(@Autowired DepartmentRepository departmentRepository, @Autowired EmployeeRepository employeeRepository) {
 
         this.departmentRepository = departmentRepository;
         this.employeeRepository = employeeRepository;
@@ -80,7 +81,7 @@ public class ListController {
         try {
             if(dept.getDeptNo() == null)
                 dept = departmentRepository.findById(current).get();
-            employees = dept.getEmployees();
+            employees = employeeRepository.findAllByDepartment(dept); //has to be done, otherwise hibernate will fail with lazyloading after POST /employees/new
             employees.sort(Comparator.comparing(Employee::getLastname).thenComparing(Employee::getFirstname));
         } catch(NoSuchElementException | NullPointerException e) {
             dept = null;
@@ -100,6 +101,39 @@ public class ListController {
         attributes.addFlashAttribute("currentDept", emp.getDepartment());
         emp.getDepartment().removeEmployee(emp);
         employeeRepository.saveAndFlush(emp);
+
+        return "redirect:/employees";
+    }
+
+    @GetMapping("new/{deptId}")
+    public String addEmployee(@PathVariable("deptId") String deptId, Model model) {
+        model.addAttribute("currentDept", departmentRepository.findById(deptId).get());
+        model.addAttribute("newEmployee", new EmployeeDto());
+        return "employeeForm";
+    }
+
+
+    @PostMapping("new/{deptId}")
+    public String addEmployee(@PathVariable("deptId") String deptId, @Valid @ModelAttribute("newEmployee") EmployeeDto empDto, Errors errors, RedirectAttributes attributes, Model model) {
+        Department dept = departmentRepository.findById(deptId).get();
+
+        if(empDto.getDateOfBirth() == null) {
+            errors.rejectValue("dateOfBirth", "", "Please select a date!");
+        }
+
+        if(errors.hasErrors()) {
+            model.addAttribute("currentDept", dept);
+            return "employeeForm";
+        }
+
+        int empno = employeeRepository.findFirstByOrderByEmployeeNoDesc().getEmployeeNo()+1;
+        Employee emp = new Employee(empno, empDto.getFirstname(), empDto.getLastname(), empDto.getGender(), empDto.getDateOfBirth(), dept);
+        employeeRepository.saveAndFlush(emp);
+
+        dept.addEmployee(emp);
+        departmentRepository.saveAndFlush(dept);
+
+        attributes.addFlashAttribute("currentDept", dept);
 
         return "redirect:/employees";
     }

@@ -1,10 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Add Employee</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        form {
+            width: 100%;
+            max-width: 600px;
+        }
+        .invalid-feedback {
+            display: block;
+        }
+    </style>
 </head>
 <body>
+    <h1>Add Employee to [[${currentDept.getDeptName()}]]</h1>
+    <form method="POST" th:action="@{/employees/new/__${currentDept.getDeptNo()}__}" th:object="${newEmployee}">
 
+        <div class="mb-3">
+            <label for="firstname" class="form-label">Firstname</label>
+            <input type="text" id="firstname" th:field="*{firstname}" class="form-control" th:classappend="${#fields.hasErrors('lastname') ? ' is-invalid' : ''}"/>
+            <div class="invalid-feedback" th:errors="*{firstname}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="lastname" class="form-label">Lastname</label>
+            <input type="text" id="lastname" th:field="*{lastname}" class="form-control" th:classappend="${#fields.hasErrors('lastname') ? ' is-invalid' : ''}"/>
+            <div class="invalid-feedback" th:errors="*{lastname}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="gender" class="form-label">Gender</label>
+            <select type="text" id="gender" th:field="*{gender}" class="form-select">
+                <option selected th:value="'M'">Male</option>
+                <option th:value="'F'">Female</option>
+            </select>
+            <div class="invalid-feedback" th:errors="*{gender}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="dateOfBirth" class="form-label">Date of Birth</label>
+            <input type="date" id="dateOfBirth" th:field="*{dateOfBirth}" class="form-control" th:classappend="${#fields.hasErrors('lastname') ? ' is-invalid' : ''}"/>
+            <div class="invalid-feedback" th:errors="*{dateOfBirth}"></div>
+        </div>
+
+        <button class="btn btn-primary" type="submit">Create</button>
+
+    </form>
 </body>
 </html>
