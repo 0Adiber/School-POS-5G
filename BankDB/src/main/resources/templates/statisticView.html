@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Statistics</title>
+</head>
+<body>
+
+<h1>Statistics</h1>
+<p>Average negative balance: <span th:text="${#numbers.formatCurrency(avgNegative)}"></span></p>
+<p>Accounts with multiple owners: <span th:text="${multipleCustomers}"></span></p>
+
+<p>Highest balance: <span th:text="${#numbers.formatCurrency(highest.balance)}"></span> - <span th:each="c : ${highest.customers}"><span th:text="${c.lastname} + ' ' + ${c.firstname}"></span>, </span></p>
+<p>Lowest balance: <span th:text="${#numbers.formatCurrency(lowest.balance)}"></span> - <span th:each="c : ${lowest.customers}"><span th:text="${c.lastname} + ', ' + ${c.firstname}"></span></span></p>
+
+<form method="GET" action="/statistics">
+    <label for="city">City:</label> <input id="city" th:name="city" th:value="${city}">
+</form>
+<div>
+    <span th:each="c : ${customers}" th:text="${c.lastname} + ' ' + ${c.firstname} + ', '"></span>
+</div>
+
+<p>Male/Female Ratio: <span th:text="${males} + '% / ' + ${females} + '%'"></span></p>
+
+<a href="/customers">back to customer list</a>
+</body>
+</html>

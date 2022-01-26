@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Customer Selection</title>
+</head>
+<body>
+
+    <h1>Customer Selection</h1>
+    <a href="/statistics">see statistics</a>
+    <br><br>
+    <form method="POST">
+        <label for="lastname">Lastname: </label>
+        <input th:name="lastname" id="lastname" th:value="${currentLastname}">
+    </form>
+
+    <p>Customers found: <span th:text="${customers.size}"></span></p>
+    <form method="POST" action="/details">
+        <div th:each="customer : ${customers}">
+            <input th:name="customer" name="customer" type="radio" th:value="${customer.customerId}"><span th:text="${customer.lastname} + ', ' + ${customer.firstname}"></span></input>
+        </div>
+        <br>
+        <button type="submit">show customer details</button>
+    </form>
+</body>
+</html>

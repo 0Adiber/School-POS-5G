@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Customer Overview</title>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Customer Overview</h1>
+
+    <div>
+        <p th:text="'Customer: ' + ${customer.lastname} + ', ' + ${customer.firstname} + ' (' + ${customer.gender} + ') ' + ${customer.dayOfBirth}"></p>
+        <p th:text="'Address: ' + ${customer.address.getStreetname()} + ' ' + ${customer.address.getStreetNumber()} + ', ' + ${customer.address.getZipCode()} + ' ' + ${customer.address.getCity()}"></p>
+    </div>
+
+    <h3>Giro Accounts: </h3>
+    <table>
+        <thead>
+        <tr>
+            <td>number</td>
+            <td>balance</td>
+            <td>overdraft-limit</td>
+            <td>debit</td>
+            <td>credit</td>
+            <td>amount</td>
+            <td>update</td>
+        </tr>
+        </thead>
+        <tbody th:each="acc : ${customer.accounts}">
+            <tr th:if="${acc instanceof T(at.kaindorf.bankdb.pojos.GiroAccount)}">
+                <form method="POST" action="/details/update">
+                    <td th:text="${acc.accountNumber}"></td>
+                    <input type="hidden" th:value="${acc.accountId}" th:name="accountId" />
+                    <td th:text="${#numbers.formatCurrency(acc.balance)}"></td>
+                    <td th:text="${#numbers.formatCurrency(acc.overdraft)}"></td>
+                    <td th:text="${acc.debitInterest} + ' %'"></td>
+                    <td th:text="${acc.creditInterest} + ' %'"></td>
+                    <td><input type="number" th:name="amount" th:value="0.0"/></td>
+                    <td>
+                        <button type="submit" th:name="action" th:value="1">+</button>
+                        <button type="submit" th:name="action" th:value="-1">-</button>
+                    </td>
+                </form>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Savings Accounts: </h3>
+    <table>
+        <thead>
+        <tr>
+            <td>number</td>
+            <td>balance</td>
+            <td>interest</td>
+            <td>amount</td>
+            <td>update</td>
+        </tr>
+        </thead>
+        <tbody th:each="acc : ${customer.accounts}">
+        <tr th:if="${acc instanceof T(at.kaindorf.bankdb.pojos.SavingsAccount)}">
+            <form method="POST" action="/details/update">
+                <td th:text="${acc.accountNumber}"></td>
+                <input type="hidden" th:value="${acc.accountId}" th:name="accountId" />
+                <td th:text="${#numbers.formatCurrency(acc.balance)}"></td>
+                <td th:text="${acc.interest} + ' %'"></td>
+                <td><input type="number" th:name="amount" th:value="0.0"/></td>
+                <td>
+                    <button type="submit" th:name="action" th:value="1">+</button>
+                    <button type="submit" th:name="action" th:value="-1">-</button>
+                </td>
+            </form>
+        </tr>
+        </tbody>
+    </table>
+
+    <br>
+    <p th:if="${error} != null" th:text="${error}" style="color: red"></p>
+    <br>
+    <p>Total balance of all accounts: <span th:text="${totalBalance}"></span></p>
+
+    <a href="/customers">back to customer list</a>
+
+</body>
+</html>
