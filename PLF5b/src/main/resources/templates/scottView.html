@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Scott is gay</title>
+    <style>
+        table, td, tr, th {
+            border: 1px solid black; border-collapse: collapse;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Scott-Database</h1>
+    <form method="post" action="/scottdb" style="display: flex; flex-direction: column;">
+        <div th:each="department : ${departments}">
+            <input type="radio" th:checked="${deptno  == department.deptno}" name="deptno" th:value="${department.deptno}" th:text="${department.dname} + ' - ' + ${department.location}" onchange="this.form.submit()"/>
+        </div>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Job</th>
+                <th>Hiredate</th>
+                <th>Salary</th>
+                <th>Salgrade</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="emp : ${emps}">
+                <td th:text="${#strings.capitalize(#strings.toLowerCase(emp.getKey().lastname))}"></td>
+                <td th:text="${#strings.capitalize(#strings.toLowerCase(emp.getKey().job))}"></td>
+                <td th:text="${#temporals.format(emp.getKey().hiredate, 'dd-MM-yyyy')}"></td>
+                <td th:text="${#numbers.formatCurrency(emp.getKey().salary)}"></td>
+                <td th:text="${emp.getValue()}"></td>
+            </tr>
+            <tr>
+                <form th:if="${newEmp} != null" method="post" action="/scottdb/addEmp" th:object="${newEmp}">
+                    <td><input type="text" th:field="*{lastname}" /></td>
+                    <td><input type="text" th:field="*{job}" /></td>
+                    <td><input type="text" th:field="*{hiredate}" /></td><span th:if="${#fields.hasErrors('hiredate')}" th:errors="*{hiredate}" class="error">Date error</span>
+                    <td><input type="number" th:field="*{salary}" /></td><span th:if="${#fields.hasErrors('salary')}" th:errors="*{salary}" class="error">Salary error</span>
+                    <td><button type="submit">add</button></td>
+                </form>
+            </tr>
+        </tbody>
+    </table>
+
+
+
+</body>
+</html>

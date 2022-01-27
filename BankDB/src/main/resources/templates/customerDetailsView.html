@@ -22,15 +22,15 @@
     <h3>Giro Accounts: </h3>
     <table>
         <thead>
-        <tr>
-            <td>number</td>
-            <td>balance</td>
-            <td>overdraft-limit</td>
-            <td>debit</td>
-            <td>credit</td>
-            <td>amount</td>
-            <td>update</td>
-        </tr>
+            <tr>
+                <td>number</td>
+                <td>balance</td>
+                <td>overdraft-limit</td>
+                <td>debit</td>
+                <td>credit</td>
+                <td>amount</td>
+                <td>update</td>
+            </tr>
         </thead>
         <tbody th:each="acc : ${customer.accounts}">
             <tr th:if="${acc instanceof T(at.kaindorf.bankdb.pojos.GiroAccount)}">
