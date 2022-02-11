@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ExamDB</title>
+    <script src="exams.js"></script>
+</head>
+<body>
+
+    <label for="classnames">Classname</label>
+    <select id="classnames" name="classid" onchange="loadStudents()">
+    </select>
+
+    <br><br>
+
+    <div id="student-list">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Firstname</th>
+                    <th>Lastname</th>
+                </tr>
+            </thead>
+            <tbody id="student-list-rows">
+
+            </tbody>
+        </table>
+        <button onclick="loadStudents(-1)">&lt; previous</button>  <span id="student-list-current"></span>/<span id="student-list-total"></span> <button onclick="loadStudents(1)">next &gt;</button>
+    </div>
+</body>
+</html>
