@@ -30,6 +30,5 @@ public class Exam {
 
     @ManyToOne
     @JoinColumn(name = "subject")
-    @JsonIgnore
     private Subject subject;
 }

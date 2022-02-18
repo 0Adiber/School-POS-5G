@@ -22,9 +22,8 @@ public class StudentController {
     ExamRepository examRepository;
 
     @GetMapping("/{studentId}")
-    public ResponseEntity<Iterable<Exam>> getExamsByStudent(@PathVariable("studentId") Long studentId, @RequestParam(name = "page", defaultValue = "0") int pageNo) {
-        Pageable page = PageRequest.of(pageNo, 10, Sort.by("lastname", "firstname"));
-        return ResponseEntity.of(Optional.of(examRepository.findByStudent_StudentIdEquals(studentId, page)));
+    public ResponseEntity<Iterable<Exam>> getExamsByStudent(@PathVariable("studentId") Long studentId) {
+        return ResponseEntity.of(Optional.of(examRepository.findByStudent_StudentIdEquals(studentId)));
     }
 
 }
