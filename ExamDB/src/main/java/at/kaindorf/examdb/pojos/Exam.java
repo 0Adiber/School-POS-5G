@@ -13,7 +13,6 @@ import java.time.LocalDate;
 @ToString(onlyExplicitlyIncluded = true)
 public class Exam {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "exam_id", nullable = false)
     private Long examId;
 

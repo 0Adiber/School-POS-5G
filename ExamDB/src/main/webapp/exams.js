@@ -6,11 +6,13 @@ window.onload = () => {
 var studentPage = "";
 var subjects = [];
 
+var examProps = ['examId', 'dateOfExam', 'duration', 'subject']
+
 function loadSubjects() {
     fetch(`subject/`)
         .then(res => res.json())
         .then(res => {
-            subjects = res;
+            subjects = [{}, ...res];
         })
 }
 
@@ -75,7 +77,7 @@ function loadExams(studentId) {
             for(const s of res) {
                 const row = document.createElement('tr');
 
-                Object.keys(s).forEach(i => {
+                examProps.forEach(i => {
                     const data = document.createElement('td');
                     data.value = s[i];
                     if(i != 'subject')
@@ -91,26 +93,27 @@ function loadExams(studentId) {
             }
 
             const newExam = createEl("tr", "", {"class": "add-exam"});
-            newExam.appendChild(tdWithInput({"type": "text", name: "subject"}))
-            newExam.appendChild(tdWithInput({"type": "number", name: "duration"}))
-            newExam.appendChild(tdWithInput({"type": "date", name: "date"}))
-            const subjectSelect = createEl("select");
+            newExam.appendChild(tdWithInput({"type": "number", "name": "examId"}))
+            newExam.appendChild(tdWithInput({"type": "date", "name": "dateOfExam"}))
+            newExam.appendChild(tdWithInput({"type": "number", "name": "duration"}))
+            const subjectSelect = createEl("select", "",{"id": "subject"});
             newExam.appendChild(subjectSelect);
 
-            console.log(subjects)
             for(const sub of subjects) {
                 subjectSelect.appendChild(createEl("option", sub['shortname'], {value: sub['subjectId']}))
             }
 
-            const btn = createEl("button", "Add", {"data-id": studentId});
+            const btn = createEl("button", "Add / Update", {"data-id": studentId});
             btn.onclick = (e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 const inputs = e.target.parentElement.querySelectorAll(`input`);
                 const newExam = {};
                 for (const i of inputs) {
-                    newExam[i.name] = i.value;
+                    if(i.value != '')
+                        newExam[i.name] = i.value;
                 }
+                addExam(newExam, studentId, document.getElementById('subject').value);
             };
             newExam.appendChild(btn);
             table.appendChild(newExam);
@@ -123,6 +126,32 @@ function deleteExam(examId, studentId) {
         .then(() => {
            loadExams(studentId);
         });
+}
+
+function addExam(exam, studentId, subjectId) {
+    if(exam['duration'] && exam['duration'] < 0) {
+        window.alert("Duration must be >0")
+        return;
+    }
+
+    if(subjectId)
+        exam['subject'] = subjects.find((i) => i.subjectId == subjectId);
+
+    if(exam['examId']) {
+        fetch(`exam/${exam['examId']}`, {method: 'PATCH', body: JSON.stringify({...exam}), headers: {'Content-Type': 'application/json'}})
+            .then(() => loadExams(studentId));
+    } else {
+        if(!exam['dateOfExam'] || !exam['duration'] || !exam['subject']) {
+            window.alert("Please insert all needed values");
+            return;
+        }
+        fetch(`exam/?studentId=${studentId}&subjectId=${subjectId}`, {
+            method: 'POST',
+            body: JSON.stringify({...exam}),
+            headers: {'Content-Type': 'application/json'}
+        })
+            .then(() => loadExams(studentId));
+    }
 }
 
 function tdWithInput(attrs = {}) {
