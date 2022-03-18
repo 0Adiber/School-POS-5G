@@ -15,7 +15,6 @@ import java.util.List;
 @ToString(onlyExplicitlyIncluded = true)
 public class Student {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "student_id", nullable = false)
     private Long studentId;
 

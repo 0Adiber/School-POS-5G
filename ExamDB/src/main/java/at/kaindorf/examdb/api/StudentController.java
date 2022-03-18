@@ -23,7 +23,7 @@ public class StudentController {
 
     @GetMapping("/{studentId}")
     public ResponseEntity<Iterable<Exam>> getExamsByStudent(@PathVariable("studentId") Long studentId) {
-        return ResponseEntity.of(Optional.of(examRepository.findByStudent_StudentIdEquals(studentId)));
+        return ResponseEntity.of(Optional.of(examRepository.findByStudent_StudentIdEqualsOrderByExamId(studentId)));
     }
 
 }

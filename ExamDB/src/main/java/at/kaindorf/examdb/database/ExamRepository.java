@@ -10,6 +10,6 @@ import java.util.List;
 
 public interface ExamRepository extends JpaRepository<Exam, Long> {
 
-    List<Exam> findByStudent_StudentIdEquals(Long studentId);
+    List<Exam> findByStudent_StudentIdEqualsOrderByExamId(Long studentId);
 
 }
