@@ -30,11 +30,10 @@ public class ExamController {
     private static final Random RAND = new Random();
 
     @PostMapping
-    public ResponseEntity<Exam> createCustomer(@RequestBody Exam exam, @RequestParam(value = "studentId") Long studentId, @RequestParam(value = "subjectId") Long subjectId) {
+    public ResponseEntity<Exam> createCustomer(@RequestBody Exam exam, @RequestParam(value = "studentId") Long studentId) {
         try {
             exam.setExamId(RAND.nextInt(90_000)+10_000L);
             exam.setStudent(studentRepository.findById(studentId).get());
-            exam.setSubject(subjectRepository.findById(subjectId).get());
             examRepository.save(exam);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
@@ -53,7 +52,7 @@ public class ExamController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Exam> patchExam(@PathVariable("id") Long id, @RequestBody() Exam patch) {
+    public ResponseEntity<Exam> patchExam(@PathVariable("id") Long id, @RequestBody Exam patch) {
         if(examRepository.existsById(id)) {
             Exam customer = examRepository.findById(id).get();
 

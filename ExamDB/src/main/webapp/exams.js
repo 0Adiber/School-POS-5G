@@ -138,17 +138,17 @@ function addExam(exam, studentId, subjectId) {
         exam['subject'] = subjects.find((i) => i.subjectId == subjectId);
 
     if(exam['examId']) {
-        fetch(`exam/${exam['examId']}`, {method: 'PATCH', body: JSON.stringify({...exam}), headers: {'Content-Type': 'application/json'}})
+        fetch(`exam/${exam['examId']}`, {method: 'PATCH', body: JSON.stringify(exam), headers: {'Content-Type': 'application/json'}})
             .then(() => loadExams(studentId));
     } else {
         if(!exam['dateOfExam'] || !exam['duration'] || !exam['subject']) {
             window.alert("Please insert all needed values");
             return;
         }
-        fetch(`exam/?studentId=${studentId}&subjectId=${subjectId}`, {
+        fetch(`exam/?studentId=${studentId}`, {
             method: 'POST',
-            body: JSON.stringify({...exam}),
-            headers: {'Content-Type': 'application/json'}
+            body: JSON.stringify(exam),
+            headers: { 'Content-Type': 'application/json' }
         })
             .then(() => loadExams(studentId));
     }
